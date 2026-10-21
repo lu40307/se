@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>臺北市立大學校園折射震測探究 ｜ 互動式實驗歷程 (202610_UTELS)</title>
+  <meta name="description" content="臺北市立大學校園折射震測實習互動式網頁：包含儀器介紹、臨界折射波傳動態模擬、T-X走時曲線即時探究、12炮野外幾何與288道數據品質分析。">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Floating Decorative Seismic Wave Rails (側邊波形裝飾) -->
+  <aside class="wave-rail rail-left" aria-hidden="true">
+    <canvas id="railLeftCanvas" width="70" height="900"></canvas>
+    <div class="rail-label">SEISMIC TRACES // REFRACTION</div>
+  </aside>
+  
+  <aside class="wave-rail rail-right" aria-hidden="true">
+    <canvas id="railRightCanvas" width="70" height="900"></canvas>
+    <div class="rail-label">24 CHANNELS // 0.25 ms</div>
+  </aside>
+
+  <!-- Navigation Bar -->
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#hero" class="brand">
+        <svg class="brand-wave" viewBox="0 0 40 24" fill="none">
+          <path d="M1 12 Q5 12, 10 12 T15 3 T20 21 T25 8 T30 15 T35 12 L39 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-text">UTELS 2026 <span>/ 震測探究</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#overview">實習概況</a>
+        <a href="#simulator">波傳模擬</a>
+        <a href="#tx-explorer">走時曲線</a>
+        <a href="#survey-line">12 炮幾何</a>
+        <a href="#instruments">儀器圖鑑</a>
+        <a href="#analysis">數據檢驗</a>
+        <a href="#cer">CER 論證</a>
+      </nav>
+
+      <div class="nav-action">
+        <a href="#simulator" class="btn-primary-sm">波傳模擬 🔨</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="page-wrapper">
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="hero">
+      <div class="hero-bg-wave">
+        <canvas id="heroWaveCanvas"></canvas>
+      </div>
+      
+      <div class="hero-content">
+        <div class="badge-pill">
+          <span class="pulse-dot"></span>
+          民國 115 年 10 月 7 日 實測資料庫 ｜ 測線：202610_UTELS
+        </div>
+        <h1 class="hero-title">看不見的地下，<br><span class="gradient-text">我們如何用波來建立模型？</span></h1>
+        <p class="hero-subtitle">
+          臺北市立大學圖書館後方淺層折射震測實習。24 通道 Geometrics DAS-1、12 炮手動鐵鎚震源、288 道實測訊號，帶您走過從野外波形到地層速度反演的完整科學歷程。
+        </p>
+
+        <div class="hero-cta">
+          <a href="#simulator" class="btn-primary">
+            <span>開始波傳動態模擬</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#tx-explorer" class="btn-outline">
+            <span>探索 T-X 走時曲線</span>
+          </a>
+        </div>
+
+        <!-- KPI Metric Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-num">12</div>
+            <div class="kpi-label">震源炮點 (每 4 m 一炮)</div>
+            <div class="kpi-sub">0 ~ 44 m 展距</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-num">24</div>
+            <div class="kpi-label">檢波器測站 (間距 2 m)</div>
+            <div class="kpi-sub">0 ~ 46 m 全長</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-num">288</div>
+            <div class="kpi-label">實測總道數 (無死道)</div>
+            <div class="kpi-sub">0.25 ms 取樣率</div>
+          </div>
+          <div class="kpi-card accent">
+            <div class="kpi-num">~30m</div>
+            <div class="kpi-label">鐵鎚有效支距上限</div>
+            <div class="kpi-sub">SNR ≥ 12 dB 門檻</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Overview Section -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-tag">01 / EXPERIMENT OVERVIEW</span>
+        <h2 class="section-title">實習專案基本資料</h2>
+        <p class="section-desc">國立中央大學（NCU）地質相關實驗室協助臺北市立大學學生進行之淺層反射／折射震測作業。</p>
+      </div>
+
+      <div class="overview-grid">
+        <div class="card glass-card">
+          <div class="card-icon">📍</div>
+          <h3>測區與環境</h3>
+          <ul class="meta-list">
+            <li><strong>測區位置：</strong>臺北市立大學 圖書館後方空地</li>
+            <li><strong>測線走向：</strong>由北向南（0 m 位於北側，46 m 位於南側）</li>
+            <li><strong>施測天候：</strong>晴朗日間作業（11:13 ~ 11:38 UTC+8）</li>
+            <li><strong>參與人員：</strong>紀錄員小郭、指導教授與修課學生共 20 人</li>
+          </ul>
+        </div>
+
+        <div class="card glass-card">
+          <div class="card-icon">⚡</div>
+          <h3>採集儀器與幾何</h3>
+          <ul class="meta-list">
+            <li><strong>紀錄主機：</strong>Geometrics DAS-1 NZ 24 通道</li>
+            <li><strong>震源形式：</strong>重型鐵鎚敲擊鋼板（同點疊加 3~15 次）</li>
+            <li><strong>檢波器：</strong>垂直動圈式受波器（24 支，2.0 m 間距）</li>
+            <li><strong>濾波設定：</strong>Low Cut、High Cut、Notch 全部關閉（無濾波）</li>
+          </ul>
+        </div>
+
+        <div class="card glass-card">
+          <div class="card-icon">🎯</div>
+          <h3>探究核心主張 (Claim)</h3>
+          <p class="summary-text">
+            地底並非單一均勻介質。透過改變震源位置（受波器固定不動），量測直達波與臨界折射波在不同支距的抵達時間，我們能夠辨別地表覆土與下伏較高速緻密層之速度結構與界面深度。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Wave Simulator -->
+    <section class="section" id="simulator">
+      <div class="section-header">
+        <span class="section-tag">02 / WAVE SIMULATION LAB</span>
+        <h2 class="section-title">臨界折射波傳即時模擬器</h2>
+        <p class="section-desc">點擊「敲擊鐵鎚」觀察直達波沿地表前進，以及波動在臨界角（θc）進入高速下層後產生的界面滑行波與回傳地表的折射首波！</p>
+      </div>
+
+      <div class="sim-container card glass-card">
+        <div class="sim-toolbar">
+          <div class="sim-actions">
+            <button id="btnStrike" class="btn-strike">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span>🔨 敲擊鐵鎚 (Strike Hammer)</span>
+            </button>
+            <button id="btnResetSim" class="btn-secondary">重設模擬</button>
+            <button id="btnSlowSim" class="btn-secondary">
+              <span id="slowText">慢速播放: 正常</span>
+            </button>
+          </div>
+          
+          <div class="sim-clock">
+            <span class="clock-label">傳播時間 Elapsed Time:</span>
+            <span class="clock-val" id="simTime">0.0 ms</span>
+          </div>
+        </div>
+
+        <!-- Canvas for wave simulation -->
+        <div class="canvas-wrap">
+          <canvas id="simCanvas" width="960" height="420"></canvas>
+          <div class="sim-legend">
+            <span class="legend-item"><span class="color-dot dot-direct"></span>直達波 Direct Wave (V1)</span>
+            <span class="legend-item"><span class="color-dot dot-refract"></span>折射首波 Head Wave (V2)</span>
+            <span class="legend-item"><span class="color-dot dot-sliding"></span>界面滑行波 Sliding Wave</span>
+            <span class="legend-item"><span class="color-dot dot-geophone"></span>受波器 Geophone (24 站)</span>
+          </div>
+        </div>
+
+        <!-- Interactive Sliders -->
+        <div class="controls-grid">
+          <div class="control-box">
+            <div class="slider-header">
+              <label for="sliderV1">第 1 層覆土速度 (V1)</label>
+              <span class="val-display" id="valV1">350 m/s</span>
+            </div>
+            <input type="range" id="sliderV1" min="200" max="450" step="10" value="350">
+            <span class="hint">直達波速度，斜率倒數</span>
+          </div>
+
+          <div class="control-box">
+            <div class="slider-header">
+              <label for="sliderV2">第 2 層下伏速度 (V2)</label>
+              <span class="val-display" id="valV2">650 m/s</span>
+            </div>
+            <input type="range" id="sliderV2" min="500" max="950" step="10" value="650">
+            <span class="hint">折射波速度 (需 > V1 產生折射)</span>
+          </div>
+
+          <div class="control-box">
+            <div class="slider-header">
+              <label for="sliderDepth">分界面深度 (h)</label>
+              <span class="val-display" id="valDepth">3.0 m</span>
+            </div>
+            <input type="range" id="sliderDepth" min="1.5" max="6.0" step="0.2" value="3.0">
+            <span class="hint">影響截距時間 ti 與交叉距離</span>
+          </div>
+
+          <div class="control-box calculated-box">
+            <div class="calc-row">
+              <span>臨界角 θc:</span>
+              <strong id="calcCritAngle">32.6°</strong>
+            </div>
+            <div class="calc-row">
+              <span>截距時間 ti:</span>
+              <strong id="calcTi">14.4 ms</strong>
+            </div>
+            <div class="calc-row">
+              <span>交叉距離 x_cross:</span>
+              <strong id="calcXcross">11.0 m</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive T-X Travel Time Curve Explorer -->
+    <section class="section" id="tx-explorer">
+      <div class="section-header">
+        <span class="section-tag">03 / TRAVEL TIME CURVE</span>
+        <h2 class="section-title">T-X 走時曲線探索器</h2>
+        <p class="section-desc">直達波（藍線）與折射波（紅線）在不同支距下的初達時間。實心圓點為本次 202610_UTELS 實測 8~14 m 穩定區間數據。</p>
+      </div>
+
+      <div class="tx-container card glass-card">
+        <div class="tx-layout">
+          <div class="tx-chart-wrap">
+            <canvas id="txCanvas" width="650" height="380"></canvas>
+            <div id="txTooltip" class="tx-tooltip"></div>
+          </div>
+
+          <div class="tx-sidebar">
+            <div class="tx-stat-panel">
+              <h4>當前模型理論值</h4>
+              <div class="tx-stat-row">
+                <span>交叉距離 x_cross:</span>
+                <span class="tx-stat-highlight" id="statXcross">11.0 m</span>
+              </div>
+              <p class="sub-explain">在此距離以內，直達波最快；超過此距離後，折射波率先抵達！</p>
+              
+              <div class="tx-stat-row">
+                <span>截距時間 t_i:</span>
+                <span class="tx-stat-highlight" id="statTi">14.4 ms</span>
+              </div>
+              <p class="sub-explain">折射線向左外插回 x = 0 的時間截距，可直接用於計算界面深度。</p>
+            </div>
+
+            <div class="tx-field-panel">
+              <h4>實測 288 道關鍵核對點</h4>
+              <div class="badge-tag green">✓ 支距 8 m: 到時 14.6 ms (視速度 547 m/s)</div>
+              <div class="badge-tag green">✓ 支距 10 m: 到時 18.8 ms (視速度 533 m/s)</div>
+              <div class="badge-tag green">✓ 支距 12 m: 到時 20.8 ms (視速度 578 m/s)</div>
+              <div class="badge-tag green">✓ 支距 14 m: 到時 24.5 ms (視速度 571 m/s)</div>
+              <p class="field-note">
+                💡 實測數據在 8~14 m 展現極高的一致性（收斂於 533~578 m/s），為下層速度 V2 提供了堅實的客觀物理證據。
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12-Shot Survey Line Explorer -->
+    <section class="section" id="survey-line">
+      <div class="section-header">
+        <span class="section-tag">04 / SURVEY GEOMETRY</span>
+        <h2 class="section-title">12 炮野外測線幾何儀</h2>
+        <p class="section-desc">點擊下方任一炮點（Shot 101 ~ 112），觀察該震源激發點與 24 支固定受波器之相對幾何、疊加次數與支距範圍。</p>
+      </div>
+
+      <div class="line-container card glass-card">
+        <!-- Interactive Survey Line Canvas -->
+        <div class="line-canvas-box">
+          <canvas id="lineCanvas" width="940" height="150"></canvas>
+        </div>
+
+        <!-- Shot Selector Pills -->
+        <div class="shot-selector-bar" id="shotButtons">
+          <!-- Populated by JavaScript -->
+        </div>
+
+        <!-- Active Shot Details Grid -->
+        <div class="shot-info-grid" id="shotDetails">
+          <div class="info-card">
+            <span class="info-title">當前炮點編號</span>
+            <span class="info-val" id="shotId">Shot 1 (FFID: 101.dat)</span>
+          </div>
+          <div class="info-card">
+            <span class="info-title">震源位置 (X)</span>
+            <span class="info-val" id="shotLoc">0.0 m (測線起點)</span>
+          </div>
+          <div class="info-card">
+            <span class="info-title">同點垂直疊加</span>
+            <span class="info-val" id="shotStack">15 次敲擊</span>
+          </div>
+          <div class="info-card">
+            <span class="info-title">支距涵蓋 (Offsets)</span>
+            <span class="info-val" id="shotOffsets">0 m ~ +46 m (正向)</span>
+          </div>
+        </div>
+
+        <!-- Interactive Seismic Gather Mini-Viewer -->
+        <div class="gather-preview-box">
+          <div class="gather-header">
+            <h4>當前炮集集波形特徵 (Shot Gather Preview)</h4>
+            <span class="gather-badge" id="gatherBadge">24 Traces ｜ 2000 Samples ｜ 0.25 ms</span>
+          </div>
+          <canvas id="gatherCanvas" width="920" height="180"></canvas>
+          <div class="gather-caption">波形示意圖：呈現近支距直達波起跳與遠支距訊號隨距離衰減特徵。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Equipment Showcase -->
+    <section class="section" id="instruments">
+      <div class="section-header">
+        <span class="section-tag">05 / EQUIPMENT SHOWCASE</span>
+        <h2 class="section-title">實習儀器與系統圖鑑</h2>
+        <p class="section-desc">完整震測系統涵蓋震源、受波器、主機與輔助電源，點擊卡片查看現場設備照片與工作職責。</p>
+      </div>
+
+      <div class="equip-grid">
+        <div class="equip-card card glass-card" onclick="openEquipModal('das1')">
+          <div class="equip-img-wrap">
+            <img src="assets/das1.jpg" alt="Geometrics DAS-1 NZ 24 通道震測儀" loading="lazy">
+            <span class="equip-tag">主機記錄</span>
+          </div>
+          <div class="equip-body">
+            <h3>Geometrics DAS-1 NZ</h3>
+            <p>24 通道數位震測儀，固定 36 dB 放大增益、0.25 ms 高速取樣，負責次毫秒級時間同步與同點波形疊加運算。</p>
+            <span class="btn-text">查看詳細規格 ➔</span>
+          </div>
+        </div>
+
+        <div class="equip-card card glass-card" onclick="openEquipModal('geophone')">
+          <div class="equip-img-wrap">
+            <img src="assets/geophone.jpg" alt="垂直速度檢波器插設" loading="lazy">
+            <span class="equip-tag">信號感測</span>
+          </div>
+          <div class="equip-body">
+            <h3>動圈式受波器 (Geophones)</h3>
+            <p>24 支垂直分量速度型檢波器，沿測線以 2.0 m 間距嚴格量距。鋼針垂直釘入地面確保良好耦合，感應地表振動。</p>
+            <span class="btn-text">查看詳細規格 ➔</span>
+          </div>
+        </div>
+
+        <div class="equip-card card glass-card" onclick="openEquipModal('hammer')">
+          <div class="equip-img-wrap">
+            <img src="assets/hammer.jpg" alt="鐵鎚與觸發開關" loading="lazy">
+            <span class="equip-tag">震源與觸發</span>
+          </div>
+          <div class="equip-body">
+            <h3>手動鐵鎚 + 鐵板 + Trigger</h3>
+            <p>以重型鐵鎚垂直敲擊厚鋼板激發 P 波；鎚柄固定瞬時壓電觸發開關（Trigger），撞擊瞬間確立 t = 0 激發基準。</p>
+            <span class="btn-text">查看詳細規格 ➔</span>
+          </div>
+        </div>
+
+        <div class="equip-card card glass-card" onclick="openEquipModal('system')">
+          <div class="equip-img-wrap">
+            <img src="assets/system.jpg" alt="現場完整量測系統" loading="lazy">
+            <span class="equip-tag">系統整合</span>
+          </div>
+          <div class="equip-body">
+            <h3>全系統野外整合配置</h3>
+            <p>包含 12V 直流深循環電瓶（隔絕 60 Hz 市電雜波）、24 接頭遮蔽訊號電纜與現場即時顯示電腦，構成完整作業鏈。</p>
+            <span class="btn-text">查看詳細規格 ➔</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Data Quality & Sensitivity Analysis -->
+    <section class="section" id="analysis">
+      <div class="section-header">
+        <span class="section-tag">06 / SCIENTIFIC RIGOR</span>
+        <h2 class="section-title">數據品質與敏感度檢驗</h2>
+        <p class="section-desc">「我得到的數字，是地下介質給的，還是演算法參數給的？」透過嚴格的科學批判思維檢驗實測數據。</p>
+      </div>
+
+      <div class="analysis-split card glass-card">
+        <div class="tab-controls">
+          <button class="tab-btn active" onclick="switchAnalysisTab('snr')">1. 訊噪比 (SNR) 衰減特徵</button>
+          <button class="tab-btn" onclick="switchAnalysisTab('sens')">2. 初達波視速度敏感度檢驗</button>
+          <button class="tab-btn" onclick="switchAnalysisTab('recip')">3. 35 組走時互換性驗證</button>
+        </div>
+
+        <!-- Tab 1: SNR Decay -->
+        <div class="tab-content active" id="tab-snr">
+          <div class="analysis-grid">
+            <div class="analysis-text">
+              <h3>鐵鎚能量在 30 m 後就輸給雜訊了</h3>
+              <p>
+                每道波形施加 40–400 Hz 帶通濾波後計算 SNR。在近支距處 SNR 高達 <strong>50 dB</strong>，但受球面擴散與土層吸收，支距超過 <strong>30 m</strong> 後中位 SNR 降至 12 dB 以下，初達波起跳被背景雜訊淹沒。
+              </p>
+              <div class="stat-pill red">有效支距上限：約 30 m ｜ 71.5% 道數 SNR ≥ 25 dB</div>
+              <p class="implication-note">
+                📌 <strong>科學啟示：</strong>折射反演不能強行採用全線 46 m 數據，必須以測線中段的高品質信號為核心依據。
+              </p>
+            </div>
+            <div class="analysis-img-box">
+              <img src="assets/analysis.png" alt="訊噪比衰減與敏感度檢驗圖" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Sensitivity Test -->
+        <div class="tab-content" id="tab-sens">
+          <div class="sens-interactive">
+            <h3>挑選視窗變動檢驗：真信號 vs 假象</h3>
+            <p>
+              我們將自動挑選器速度視窗下限從 160 掃描至 300 m/s。檢驗結果證實：
+            </p>
+            <div class="sens-compare-grid">
+              <div class="sens-box error-box">
+                <div class="sens-badge red">❌ 不可靠假象：支距 &lt; 8 m</div>
+                <div class="sens-val">視速度變動率：55% ~ 88%</div>
+                <p>近支距視速度完全隨著演算法視窗下限移動，且混雜了視速度僅約 160 m/s 的強能量地滾波（Ground Roll），不可當作地層真實性質！</p>
+              </div>
+
+              <div class="sens-box success-box">
+                <div class="sens-badge green">✓ 高度可靠真相：支距 8 ~ 14 m</div>
+                <div class="sens-val">視速度變動率：僅 2% ~ 9%</div>
+                <p>各支距視速度極度穩定地收斂在 <strong>533 ~ 578 m/s</strong>（平均約 550 m/s），不受挑選參數影響，為下層高速折射層提供了堅實無誤的客觀證據！</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Reciprocity -->
+        <div class="tab-content" id="tab-recip">
+          <div class="recip-box">
+            <h3>走時互換定理（Principle of Reciprocity）檢核</h3>
+            <p>
+              在彈性介質中，Shot A 到 Station B 與 Shot B 到 Station A 的傳播時間理論上必須完全相同。全測線比對 <strong>35 組互換炮檢對</strong>：
+            </p>
+            <div class="recip-metric">
+              <div class="recip-num">1.5 ms</div>
+              <div class="recip-sub">35 組互換配對之走時中位差</div>
+            </div>
+            <p class="recip-footer">
+              僅 1.5 ms 的極低時間偏差，驗證了野外皮尺量距的高幾何精度、檢波器定位無誤，以及鐵鎚 trigger 時間同步的高度可靠性。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CER Framework Section -->
+    <section class="section" id="cer">
+      <div class="section-header">
+        <span class="section-tag">07 / SCIENTIFIC ARGUMENT</span>
+        <h2 class="section-title">CER 科學論證模型</h2>
+        <p class="section-desc">Claim（主張）、Evidence（證據）、Reasoning（推理）：以嚴密邏輯將觀測數據與地球物理模型緊密相連。</p>
+      </div>
+
+      <div class="cer-cards-grid">
+        <div class="cer-card claim">
+          <div class="cer-label">C · 主張 (CLAIM)</div>
+          <h3>提出地層模型</h3>
+          <p>
+            臺北市立大學圖書館後方地下並非單一均勻介質，而是至少由上層低速表層覆土與下伏較高速、較緻密沉積層所組成的<strong>雙層速度構造</strong>。
+          </p>
+        </div>
+
+        <div class="cer-card evidence">
+          <div class="cer-label">E · 證據 (EVIDENCE)</div>
+          <h3>列出客觀數據</h3>
+          <ul>
+            <li>若以單一直線擬合全測線走時，殘差 RMS 高達 <strong>11.1 ms</strong>，單一速度完全無法吻合數據。</li>
+            <li>在支距 8~14 m 穩定區間，視速度客觀收斂於 <strong>533 ~ 578 m/s</strong>，參數變動率僅 2%~9%。</li>
+            <li>35 組反向互換時間中位差僅 <strong>1.5 ms</strong>，佐證波動傳播之真實性。</li>
+          </ul>
+        </div>
+
+        <div class="cer-card reasoning">
+          <div class="cer-label">R · 推理 (REASONING)</div>
+          <h3>連結物理定律</h3>
+          <p>
+            依據司乃耳定律與臨界折射理論，走時圖之斜率等於速度之倒數（1/v）。當傳播距離拉長時，初達波轉由深部高速滑行之折射首波主導，導致走時曲線斜率顯著變緩。斜率的轉折是波速隨深度躍升的最直接物理判據。
+          </p>
+        </div>
+      </div>
+    </section>
+
+
+
+  </main>
+
+  <!-- Equipment Modal Dialog -->
+  <div class="modal-backdrop" id="equipModal" onclick="closeEquipModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeEquipModal()">&times;</button>
+      <div class="modal-header">
+        <h3 id="modalTitle">儀器名稱</h3>
+        <span class="modal-sub" id="modalSub">型號 / 類別</span>
+      </div>
+      <div class="modal-body">
+        <img id="modalImg" src="" alt="儀器照片">
+        <div class="modal-text">
+          <h4>規格與參數</h4>
+          <p id="modalSpecs">詳細規格...</p>
+          <h4>現場任務與角色</h4>
+          <p id="modalRole">角色說明...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <svg class="brand-wave" viewBox="0 0 40 24" fill="none">
+          <path d="M1 12 Q5 12, 10 12 T15 3 T20 21 T25 8 T30 15 T35 12 L39 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>202610_UTELS 臺北市立大學校園折射震測探究</span>
+      </div>
+      <p class="footer-copy">國立中央大學（NCU）地質相關實驗室（NCUSSS）協助 ｜ 2026-10-07 實測資料</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>
